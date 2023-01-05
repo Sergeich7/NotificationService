@@ -15,6 +15,11 @@ Python, Django framework, Django REST framework, SQLite, Redis, Celery, RabbitMQ
 * http://localhost:8000/api/v1/schema/redoc/
 * http://localhost:8000/api/v1/schema/
 
+### Управление
+* Админка Django (admin/admin): http://localhost:8000/admin/
+* Celery (статистика и результаты):  http://localhost:5555/
+* Админка RabbitMQ (guest/guest): http://localhost:15672/
+
 ### Задание
 Необходимо разработать сервис управления рассылками API администрирования и получения статистики, который по заданным правилам запускает рассылку по списку клиентов
 * Необходимо реализовать методы создания новой рассылки, просмотра созданных и получения статистики по выполненным рассылкам.
