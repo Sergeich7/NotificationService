@@ -1,0 +1,71 @@
+version: '3.3'
+
+services:
+
+    redis:
+        image: redis:alpine
+        container_name: notifyRedis
+        networks:
+            - notify_net
+
+#    rabbit:
+#        image: rabbitmq:3.11-management
+#        container_name: notifyRabbitMQ
+#        restart: unless-stopped
+#        env_file: .env
+#        ports:
+#            - "5672:5672"
+#            - "15672:15672"
+#        networks:
+#            - notify_net
+
+    api:
+        build: .
+        container_name: notifyAPI
+        restart: unless-stopped
+        env_file: .env
+        command: python manage.py runserver 0.0.0.0:8000
+        working_dir: /app
+        volumes:
+            - .:/app/
+        ports:
+            - "8000:8000"
+        networks:
+            - notify_net
+
+    celery:
+        build: .
+        container_name: notifyCelery
+        restart: unless-stopped
+        env_file: .env
+        working_dir: /app
+        command: celery -A project worker -l info
+        volumes:
+            - .:/app/
+        depends_on:
+            - redis
+#            - rabbit
+        networks:
+            - notify_net
+
+    flower:
+        build: . 
+        container_name: notifyFlower
+        restart: unless-stopped
+        env_file: .env
+        working_dir: /app
+        volumes:
+            - .:/app/
+        command: celery --app=project flower
+        ports:
+            - 5555:5555
+        depends_on:
+            - redis
+#            - rabbit
+        networks:
+            - notify_net
+
+
+networks:
+    notify_net:
+        driver: bridge

@@ -1,0 +1,9 @@
+django
+djangorestframework
+python-dotenv
+drf-spectacular
+requests
+redis
+celery
+django-celery-beat
+flower
