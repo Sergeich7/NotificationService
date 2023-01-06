@@ -1,5 +1,8 @@
+"""Задачи запускаемые в асинхронном режиме."""
+
 import datetime
 import requests
+import json
 
 from django.db.models import Q
 from django.utils import timezone
@@ -8,6 +11,9 @@ from django.core.mail import send_mail
 from django.conf import settings
 from project.celery import app
 from .models import Message, Client, Distribution
+
+import logging
+logger = logging.getLogger('trace')
 
 
 @app.task
@@ -21,27 +27,30 @@ def send_one_notify(distribution_id: int, client_id: int):
     message = Message(created=now, client=client, distribution=distribution,)
     message.save()
 
-    if distribution.time_start < now < distribution.time_end:
+    if now > distribution.time_end:
+        res = json.dumps({'code': 2, 'message': 'Message expired'})
+        logger.warning(f'MESSAGE:{message.pk} DISTRIBUTION:{distribution.pk} CLIENT:{client.pk} expired.')
+    else:
         s_head = {      # заголовок запроса
             'Content-type': 'application/json',
             'Accept': 'application/json',
             'Authorization': 'Bearer {}'.format(settings.TOKEN), }
         s_data = {      # тело запроса
-            'id': message.id,
+            'id': message.pk,
             'phone': int(client.phone_number),
             'text': distribution.text, }
         try:
             # Запрос
             res = requests.post(
-                f'https://probe.fbrq.cloud/v1/send/{message.id}',
+                f'https://probe.fbrq.cloud/v1/send/{message.pk}',
                 json=s_data, headers=s_head).json()
+            logger.info(f'MESSAGE:{message.pk} DISTRIBUTION:{distribution.pk} CLIENT:{client.pk} delivered successfully.')
         except:
             # Ошибка сети
-            res = {'code': 1, 'message': 'Network error'}
+            res = json.dumps({'code': 1, 'message': 'Network error'})
+            logger.error(f'MESSAGE:{message.pk} DISTRIBUTION:{distribution.pk} CLIENT:{client.pk} not delivered. Network error.')
         finally:
             pass
-    else:
-        res = {'code': 2, 'message': 'Message expired'}
 
     # Сохраняем результат выполнения запроса
     message.status = res
@@ -66,7 +75,7 @@ def make_distribution(distribution_id: int):
     clients = recipients(distribution_id)
 
     for client in clients:
-        send_one_notify.delay(distribution_id, client.id)
+        send_one_notify.delay(distribution_id, client.pk)
 
 
 @app.task

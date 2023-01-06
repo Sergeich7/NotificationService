@@ -1,5 +1,3 @@
-import time
-
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.validators import RegexValidator
@@ -35,12 +33,10 @@ class Distribution(models.Model):
     """Рассылка."""
 
     time_start = models.DateTimeField(
-        null=True, blank=True,
         verbose_name='Дата и время запуска рассылки')
     # если по каким-то причинам не успели разослать все сообщения, то
     # никакие сообщения клиентам после этого времени доставляться не должны
     time_end = models.DateTimeField(
-        null=True, blank=True,
         verbose_name='Дата и время окончания рассылки')
     text = models.TextField(
         verbose_name='Текст сообщения для доставки клиенту')
@@ -53,7 +49,7 @@ class Distribution(models.Model):
         max_length=200, verbose_name='Фильтр: тег')
 
     def __str__(self):
-        return f'{self.id} {self.time_start} {self.time_end}'
+        return f'{self.pk} {self.time_start} {self.time_end}'
 
     class Meta:
         verbose_name = 'Рассылка'
@@ -76,4 +72,3 @@ class Message(models.Model):
     class Meta:
         verbose_name = 'Сообщение'
         verbose_name_plural = 'Сообщения'
-

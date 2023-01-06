@@ -49,6 +49,39 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '{asctime} | {levelname} | {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG',
+            'formatter': 'simple',
+        },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'trace.log',
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        'trace': {
+            'handlers': ['file'],
+            'level': 'INFO',
+        },
+    }
+}
 
 # Application definition
 
