@@ -36,10 +36,6 @@ class ClientViewSet(viewsets.ModelViewSet):
         client = serializer.save()
         logger.info(f'CLIENT:{client.id} updated.')
 
-    def perform_partial_update(self, serializer):
-        client = serializer.save()
-        logger.info(f'CLIENT:{client.id} updated.')
-
     def perform_destroy(self, serializer):
         logger.info(f'CLIENT:{serializer.id} deleted.')
         serializer.delete()
@@ -76,10 +72,6 @@ class DistributionViewSet(viewsets.ModelViewSet):
             status=status.HTTP_201_CREATED)
 
     def perform_update(self, serializer):
-        d = serializer.save()
-        logger.info(f'DISTRIBUTION:{d.id} updated.')
-
-    def perform_partial_update(self, serializer):
         d = serializer.save()
         logger.info(f'DISTRIBUTION:{d.id} updated.')
 

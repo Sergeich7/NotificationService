@@ -21,13 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ############################################
 # Переменные окружения
 if not os.environ.get('SECRET_KEY'):
-    # Запуск сервера без докера (разработка или на виртуале)
+    # Запуск сервера без докера (разработка)
     # Нет переменных окружения. Загружаем из файла.
-    if 'www' in str(Path(__file__).resolve()):
-        # На виртуале прячем .env выше корневого каталога сайта
-        ENV_DIR = BASE_DIR.parent
-    else:
-        ENV_DIR = BASE_DIR
     from dotenv import load_dotenv
     if os.path.exists(os.path.join(BASE_DIR, '.env')):
         load_dotenv(os.path.join(BASE_DIR, '.env'))

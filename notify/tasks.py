@@ -28,7 +28,8 @@ def send_one_notify(distribution_id: int, client_id: int):
     message.save()
 
     if now > distribution.time_end:
-        res = json.dumps({'code': 2, 'message': 'Message expired'})
+#        res = json.dumps({'code': 2, 'message': 'Message expired'})
+        res = {'code': 2, 'message': 'Message expired'}
         logger.warning(f'MESSAGE:{message.pk} DISTRIBUTION:{distribution.pk} CLIENT:{client.pk} expired.')
     else:
         s_head = {      # заголовок запроса
@@ -47,7 +48,7 @@ def send_one_notify(distribution_id: int, client_id: int):
             logger.info(f'MESSAGE:{message.pk} DISTRIBUTION:{distribution.pk} CLIENT:{client.pk} delivered successfully.')
         except:
             # Ошибка сети
-            res = json.dumps({'code': 1, 'message': 'Network error'})
+            res = {'code': 1, 'message': 'Network error'}
             logger.error(f'MESSAGE:{message.pk} DISTRIBUTION:{distribution.pk} CLIENT:{client.pk} not delivered. Network error.')
         finally:
             pass
